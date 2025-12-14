@@ -1,0 +1,103 @@
+version: 2
+
+project_name: op-ssh-manager
+
+before:
+  hooks:
+    - go mod tidy
+    - go generate ./...
+
+builds:
+  - id: op-ssh-manager
+    main: ./cmd/op-ssh-manager
+    binary: op-ssh-manager
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ignore:
+      - goos: windows
+        goarch: arm64
+    ldflags:
+      - -s -w
+      - -X github.com/kerren/op-ssh-manager/internal/cmd.Version={{.Version}}
+      - -X github.com/kerren/op-ssh-manager/internal/cmd.Commit={{.Commit}}
+      - -X github.com/kerren/op-ssh-manager/internal/cmd.BuildDate={{.Date}}
+
+archives:
+  - id: default
+    format: tar.gz
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- .Version }}_
+      {{- .Os }}_
+      {{- .Arch }}
+    format_overrides:
+      - goos: windows
+        format: zip
+    files:
+      - README.md
+      - LICENSE
+      - docs/*
+
+checksum:
+  name_template: 'checksums.txt'
+
+snapshot:
+  version_template: "{{ incpatch .Version }}-dev"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+      - '^ci:'
+      - Merge pull request
+      - Merge branch
+
+release:
+  github:
+    owner: kerren
+    name: op-ssh-manager
+  draft: true
+  prerelease: auto
+  mode: replace
+  header: |
+    ## What's Changed
+
+    See the [README](https://github.com/kerren/op-ssh-manager#readme) for installation and usage instructions.
+
+brews:
+  - name: op-ssh-manager
+    repository:
+      owner: kerren
+      name: homebrew-tap
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+    folder: Formula
+    homepage: https://github.com/kerren/op-ssh-manager
+    description: Manage SSH configurations using 1Password
+    license: MIT
+    skip_upload: auto
+    test: |
+      system "#{bin}/op-ssh-manager", "version"
+    install: |
+      bin.install "op-ssh-manager"
+
+nfpms:
+  - id: packages
+    package_name: op-ssh-manager
+    vendor: Kerren
+    homepage: https://github.com/kerren/op-ssh-manager
+    maintainer: Kerren <kerren@example.com>
+    description: Manage SSH configurations using 1Password
+    license: MIT
+    formats:
+      - deb
+      - rpm
+    bindir: /usr/bin
