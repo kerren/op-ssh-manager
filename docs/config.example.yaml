@@ -1,0 +1,52 @@
+# op-ssh-manager configuration file
+# Place this file at ~/.config/op-ssh-manager/config.yaml
+
+# Vaults to search for server and key items
+# Leave empty to search all accessible vaults
+vaults: []
+  # - "Development"
+  # - "Production"
+
+# Tag names for item discovery
+tags:
+  server: "op-ssh-manager/server"
+  jump: "op-ssh-manager/jump"
+  key: "op-ssh-manager/key"
+  config_history: "op-ssh-manager/config-history"
+  user_vault: "op-ssh-manager/user-vault"
+
+# File paths (defaults shown, usually don't need to change)
+paths:
+  ssh_dir: "~/.ssh"
+  main_ssh_config: "~/.ssh/config"
+  managed_config: "~/.ssh/op-ssh-manager.conf"
+  key_cache_dir: "~/.ssh/op-ssh-manager/keys"
+  agent_toml: "~/.config/1Password/ssh/agent.toml"
+  app_config_dir: "~/.config/op-ssh-manager"
+  log_dir: "~/.ssh/op-ssh-manager/logs"
+
+# SSH configuration options
+ssh:
+  # Precedence: "managed" places Include at top (managed settings win),
+  # "user" places Include at bottom (user settings win)
+  precedence: "managed"
+
+  # Mode: "include" uses Include directive (recommended),
+  # "inline" embeds managed hosts in ~/.ssh/config directly
+  mode: "include"
+
+  # Custom IdentityAgent path (leave empty for auto-detection)
+  identity_agent: ""
+
+# Sync behavior
+sync:
+  # Auto-sync before 'ssh' command
+  auto_sync: true
+
+  # Minimum time between automatic syncs
+  ttl: 5m
+
+# Daemon/scheduler configuration
+daemon:
+  # Cron schedule for automatic sync (default: hourly)
+  schedule: "0 * * * *"

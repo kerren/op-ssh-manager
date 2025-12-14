@@ -7,6 +7,8 @@
 *.dll
 *.so
 *.dylib
+op-ssh-manager
+dist/
 
 # Test binary, built with `go test -c`
 *.test
