@@ -332,6 +332,21 @@ const (
 	SSHKeyTypeRSA4096 SSHKeyType = "rsa4096"
 )
 
+// ToCLIFormat converts SSHKeyType to the format expected by the 1Password CLI
+// --ssh-generate-key flag. Ed25519 keys use lowercase, RSA keys use "RSA,bits" format.
+func (k SSHKeyType) ToCLIFormat() string {
+	switch k {
+	case SSHKeyTypeRSA2048:
+		return "RSA,2048"
+	case SSHKeyTypeRSA3072:
+		return "RSA,3072"
+	case SSHKeyTypeRSA4096:
+		return "RSA,4096"
+	default:
+		return "ed25519"
+	}
+}
+
 // CreateSSHKeyOptions contains options for creating an SSH key
 type CreateSSHKeyOptions struct {
 	// Title is the name of the key in 1Password
@@ -362,7 +377,7 @@ func (c *Client) CreateSSHKey(ctx context.Context, opts CreateSSHKeyOptions) (*S
 		"item", "create",
 		"--category", "SSH Key",
 		"--title", opts.Title,
-		fmt.Sprintf("--generate-password=%s", keyType),
+		"--ssh-generate-key", keyType.ToCLIFormat(),
 	}
 
 	if opts.Vault != "" {
