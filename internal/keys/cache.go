@@ -43,8 +43,8 @@ func (c *Cache) WriteKey(key *model.ResolvedKey) (string, error) {
 	// Format the public key properly
 	pubKey := c.formatPublicKey(key)
 
-	// Write atomically
-	if err := fs.AtomicWrite(path, []byte(pubKey), 0644); err != nil {
+	// Write atomically with secure permissions
+	if err := fs.AtomicWrite(path, []byte(pubKey), fs.SSHPubKeyPerms); err != nil {
 		return "", apperrors.Wrap(apperrors.ErrFileSystem, "failed to write public key", err)
 	}
 
