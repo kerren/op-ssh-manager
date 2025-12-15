@@ -54,11 +54,16 @@ func (m *AgentTomlManager) GenerateRules(inv *model.Inventory) string {
 			continue
 		}
 
-		// Collect unique key item IDs for this server
+		// Collect unique key item IDs and account for this server
 		var keyIDs []string
+		var account string
 		for _, keyRef := range keys {
 			if resolved, ok := inv.Keys[keyRef.UniqueKey()]; ok {
 				keyIDs = append(keyIDs, resolved.ItemID)
+				// Use the account from the first resolved key (all keys should be from the same account)
+				if account == "" && resolved.Account != "" {
+					account = resolved.Account
+				}
 			}
 		}
 
@@ -69,6 +74,11 @@ func (m *AgentTomlManager) GenerateRules(inv *model.Inventory) string {
 		// Generate TOML entry for this host
 		buf.WriteString(fmt.Sprintf("[[ssh-keys]]\n"))
 		buf.WriteString(fmt.Sprintf("# Server: %s\n", alias))
+
+		// Include account for multi-account support
+		if account != "" {
+			buf.WriteString(fmt.Sprintf("account = \"%s\"\n", account))
+		}
 
 		// Use item IDs for matching
 		if len(keyIDs) == 1 {

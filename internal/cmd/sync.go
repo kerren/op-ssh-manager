@@ -74,9 +74,19 @@ func runSync(cmd *cobra.Command, args []string) error {
 		Key:    cfg.Tags.Key,
 	}
 
+	// Get account and user info for multi-account support and per-user mappings
+	var accountUserUUID, userEmail string
+	if whoami, err := opClient.Whoami(ctx); err == nil {
+		accountUserUUID = whoami.AccountUUID
+		userEmail = whoami.Email
+	}
+
 	// Build inventory
 	log.Info("discovering servers from 1Password")
 	builder := inventory.NewBuilder(opClient, tags, cfg.Vaults)
+	if accountUserUUID != "" {
+		builder.WithAccount(accountUserUUID)
+	}
 
 	buildResult, keyResult, err := builder.BuildWithKeys(ctx)
 	if err != nil {
@@ -137,12 +147,6 @@ func runSync(cmd *cobra.Command, args []string) error {
 	// Update local paths in inventory for config generation
 	for _, resolved := range keyResult.Resolved {
 		buildResult.Inventory.Keys[resolved.SourceRef.UniqueKey()] = resolved
-	}
-
-	// Get current user email for per-user mappings
-	var userEmail string
-	if whoami, err := opClient.Whoami(ctx); err == nil {
-		userEmail = whoami.Email
 	}
 
 	// Generate SSH config
