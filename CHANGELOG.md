@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.2.4](https://github.com/kerren/op-ssh-manager/compare/v0.2.3...v0.2.4) (2025-12-15)
+
+
+### Bug Fixes
+
+* **op:** use correct --ssh-generate-key flag for SSH key generation ([33f97e0](https://github.com/kerren/op-ssh-manager/commit/33f97e0b4707d3919e2eb157e27e496fa997e0a3))
+* **ssh-key:** Fix SSH key generation flag for op CLI [#7](https://github.com/kerren/op-ssh-manager/issues/7) ([8456bea](https://github.com/kerren/op-ssh-manager/commit/8456bea1259fd0949447da4660c4ec963da2ffa2))
+
 ## [0.2.3](https://github.com/kerren/op-ssh-manager/compare/v0.2.2...v0.2.3) (2025-12-15)
 
 
