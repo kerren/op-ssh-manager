@@ -43,10 +43,10 @@ tasks:
 
   coverage:
     desc: "Show test coverage"
-    deps: [test]
+    deps: [ test ]
     cmds:
       - go tool cover -html=coverage.out -o coverage.html
-      - echo "Coverage report generated: coverage.html"
+      - echo "Coverage report generated - coverage.html"
 
   lint:
     desc: "Run linter"
@@ -78,7 +78,7 @@ tasks:
 
   install:
     desc: "Install the binary"
-    deps: [build]
+    deps: [ build ]
     cmds:
       - go install -ldflags "{{.LDFLAGS}}" ./cmd/op-ssh-manager
 
