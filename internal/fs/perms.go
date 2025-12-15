@@ -16,7 +16,8 @@ const SSHConfigPerms = 0600
 const SSHKeyPerms = 0600
 
 // SSHPubKeyPerms is the recommended permission for SSH public keys
-const SSHPubKeyPerms = 0644
+// Using 0600 to restrict access to owner only for better security
+const SSHPubKeyPerms = 0600
 
 // EnsureSSHDirPerms ensures the .ssh directory has correct permissions
 func EnsureSSHDirPerms(path string) error {
