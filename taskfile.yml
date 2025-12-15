@@ -1,12 +1,111 @@
 version: '3'
 
+vars:
+  BINARY_NAME: op-ssh-manager
+  VERSION:
+    sh: git describe --tags --always --dirty 2>/dev/null || echo "dev"
+  COMMIT:
+    sh: git rev-parse --short HEAD 2>/dev/null || echo "none"
+  BUILD_DATE:
+    sh: date -u +"%Y-%m-%dT%H:%M:%SZ"
+  LDFLAGS: -s -w -X github.com/kerren/op-ssh-manager/internal/cmd.Version={{.VERSION}} -X github.com/kerren/op-ssh-manager/internal/cmd.Commit={{.COMMIT}} -X github.com/kerren/op-ssh-manager/internal/cmd.BuildDate={{.BUILD_DATE}}
+
 tasks:
+  default:
+    desc: "Build the binary (default target)"
+    cmds:
+      - task: build
+
+  build:
+    desc: "Build the binary"
+    cmds:
+      - go build -ldflags "{{.LDFLAGS}}" -o {{.BINARY_NAME}} ./cmd/op-ssh-manager
+
+  build-all:
+    desc: "Build for all platforms"
+    cmds:
+      - mkdir -p dist
+      - GOOS=linux GOARCH=amd64 go build -ldflags "{{.LDFLAGS}}" -o dist/{{.BINARY_NAME}}-linux-amd64 ./cmd/op-ssh-manager
+      - GOOS=linux GOARCH=arm64 go build -ldflags "{{.LDFLAGS}}" -o dist/{{.BINARY_NAME}}-linux-arm64 ./cmd/op-ssh-manager
+      - GOOS=darwin GOARCH=amd64 go build -ldflags "{{.LDFLAGS}}" -o dist/{{.BINARY_NAME}}-darwin-amd64 ./cmd/op-ssh-manager
+      - GOOS=darwin GOARCH=arm64 go build -ldflags "{{.LDFLAGS}}" -o dist/{{.BINARY_NAME}}-darwin-arm64 ./cmd/op-ssh-manager
+      - GOOS=windows GOARCH=amd64 go build -ldflags "{{.LDFLAGS}}" -o dist/{{.BINARY_NAME}}-windows-amd64.exe ./cmd/op-ssh-manager
+
+  test:
+    desc: "Run tests with race detection and coverage"
+    cmds:
+      - go test -v -race -coverprofile=coverage.out ./...
+
+  test-short:
+    desc: "Run short tests only"
+    cmds:
+      - go test -v -short ./...
+
+  coverage:
+    desc: "Show test coverage"
+    deps: [test]
+    cmds:
+      - go tool cover -html=coverage.out -o coverage.html
+      - echo "Coverage report generated: coverage.html"
+
+  lint:
+    desc: "Run linter"
+    cmds:
+      - golangci-lint run ./...
+
+  lint-fix:
+    desc: "Run linter with auto-fix"
+    cmds:
+      - golangci-lint run --fix ./...
+
+  fmt:
+    desc: "Format code"
+    cmds:
+      - go fmt ./...
+      - goimports -w -local github.com/kerren/op-ssh-manager .
+
+  vet:
+    desc: "Run go vet"
+    cmds:
+      - go vet ./...
+
+  clean:
+    desc: "Clean build artifacts"
+    cmds:
+      - rm -f {{.BINARY_NAME}}
+      - rm -rf dist/
+      - rm -f coverage.out coverage.html
+
+  install:
+    desc: "Install the binary"
+    deps: [build]
+    cmds:
+      - go install -ldflags "{{.LDFLAGS}}" ./cmd/op-ssh-manager
+
+  release-snapshot:
+    desc: "Create a snapshot release (for testing)"
+    cmds:
+      - goreleaser release --snapshot --clean
+
+  deps:
+    desc: "Download dependencies"
+    cmds:
+      - go mod download
+      - go mod tidy
+
+  check:
+    desc: "Run all checks (lint, vet, test)"
+    cmds:
+      - task: lint
+      - task: vet
+      - task: test
+
   init:
-    description: "Install the required dependencies for the project"
+    desc: "Install the required dependencies for the project"
     cmds:
       - brew install kerren/brrelease-tap/brrelease
 
   release:
-    description: "Runs a release using semantic versioning"
+    desc: "Runs a release using semantic versioning"
     cmds:
       - brrelease release --merge-into-branch=main
