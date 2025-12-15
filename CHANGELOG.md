@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.2.3](https://github.com/kerren/op-ssh-manager/compare/v0.2.2...v0.2.3) (2025-12-15)
+
+
+### Features
+
+* **agentcfg:** Add account field to agent.toml entries for multi-account support ([9df1755](https://github.com/kerren/op-ssh-manager/commit/9df1755f58fd1947fe6a433655c434f99af644d8))
+* **config:** Add account field to 1Password SSH agent config [#6](https://github.com/kerren/op-ssh-manager/issues/6) ([1addc96](https://github.com/kerren/op-ssh-manager/commit/1addc960fcd020ed7b3e41e2b1ee9f3d6e850eb0))
+
 ## [0.2.2](https://github.com/kerren/op-ssh-manager/compare/v0.2.1...v0.2.2) (2025-12-15)
 
 
