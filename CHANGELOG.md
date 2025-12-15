@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.2.2](https://github.com/kerren/op-ssh-manager/compare/v0.2.1...v0.2.2) (2025-12-15)
+
+
+### Features
+
+* **devops:** Migrate Makefile tasks to taskfile.yml [#5](https://github.com/kerren/op-ssh-manager/issues/5) ([a211080](https://github.com/kerren/op-ssh-manager/commit/a211080bff1ace51c631b542c79eee505f7449e3))
+
+
+### Bug Fixes
+
+* **devops:** Fix yaml linting errors ([e7960c6](https://github.com/kerren/op-ssh-manager/commit/e7960c6331e0a135d315092159b3d4f2693551c0))
+
 ## [0.2.1](https://github.com/kerren/op-ssh-manager/compare/v0.1.2...v0.2.1) (2025-12-15)
 
 
