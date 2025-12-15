@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.2.1](https://github.com/kerren/op-ssh-manager/compare/v0.1.2...v0.2.1) (2025-12-15)
+
+
+### Bug Fixes
+
+* **devops:** Add a description to the release task ([70c0c95](https://github.com/kerren/op-ssh-manager/commit/70c0c95ce28e25cfcb6e9fe3c731e64b1a3f09d6))
+
 ## [0.1.2](https://github.com/kerren/op-ssh-manager/compare/v0.1.1...v0.1.2) (2025-12-15)
 
 
