@@ -8,4 +8,4 @@ tasks:
 
   release:
     cmds:
-      - brrelease release
+      - brrelease release --merge-into-branch=main
