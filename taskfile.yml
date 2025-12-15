@@ -1,0 +1,11 @@
+version: '3'
+
+tasks:
+  init:
+    description: "Install the required dependencies for the project"
+    cmds:
+      - brew install kerren/brrelease-tap/brrelease
+
+  release:
+    cmds:
+      - brrelease release --merge-into-branch=main
