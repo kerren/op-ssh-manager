@@ -7,5 +7,6 @@ tasks:
       - brew install kerren/brrelease-tap/brrelease
 
   release:
+    description: "Runs a release using semantic versioning"
     cmds:
       - brrelease release --merge-into-branch=main
