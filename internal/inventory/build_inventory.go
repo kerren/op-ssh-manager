@@ -12,9 +12,10 @@ import (
 
 // Builder builds an inventory from 1Password
 type Builder struct {
-	Client *op.Client
-	Tags   TagConfig
-	Vaults []string
+	Client  *op.Client
+	Tags    TagConfig
+	Vaults  []string
+	Account string // 1Password account user UUID for multi-account support
 }
 
 // TagConfig holds the tag names for item discovery
@@ -31,6 +32,13 @@ func NewBuilder(client *op.Client, tags TagConfig, vaults []string) *Builder {
 		Tags:   tags,
 		Vaults: vaults,
 	}
+}
+
+// WithAccount sets the account user UUID for the builder
+// This is used to include account info in agent.toml for multi-account support
+func (b *Builder) WithAccount(accountUserUUID string) *Builder {
+	b.Account = accountUserUUID
+	return b
 }
 
 // BuildResult contains the results of building an inventory
@@ -137,6 +145,9 @@ func (b *Builder) BuildWithKeys(ctx context.Context) (*BuildResult, *ResolutionR
 
 	// Resolve keys
 	resolver := NewKeyResolver(b.Client, b.Vaults)
+	if b.Account != "" {
+		resolver.WithAccount(b.Account)
+	}
 	keyResult, err := resolver.ResolveAllKeys(ctx, buildResult.Inventory)
 	if err != nil {
 		return buildResult, nil, fmt.Errorf("failed to resolve keys: %w", err)
