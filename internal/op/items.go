@@ -210,11 +210,17 @@ func (i *Item) GetAllFieldsInSection(sectionLabel string) []Field {
 }
 
 // CreateItem creates a new item in 1Password
-func (c *Client) CreateItem(ctx context.Context, category, title, vault string, fields map[string]string) (*Item, error) {
+// Optional tags can be passed as variadic arguments
+func (c *Client) CreateItem(ctx context.Context, category, title, vault string, fields map[string]string, tags ...string) (*Item, error) {
 	args := []string{"item", "create", "--category", category, "--title", title}
 
 	if vault != "" {
 		args = append(args, "--vault", vault)
+	}
+
+	// Add tags if provided
+	if len(tags) > 0 {
+		args = append(args, "--tags", strings.Join(tags, ","))
 	}
 
 	// Add fields as arguments
