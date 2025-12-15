@@ -101,7 +101,7 @@ func runSync(cmd *cobra.Command, args []string) error {
 	// Report validation warnings
 	if buildResult.Validation != nil {
 		for _, w := range buildResult.Validation.Warnings {
-			output.PrintWarning(w)
+			output.PrintWarning("%s", w)
 		}
 	}
 
