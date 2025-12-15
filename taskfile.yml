@@ -99,3 +99,13 @@ tasks:
       - task: lint
       - task: vet
       - task: test
+
+  init:
+    desc: "Install the required dependencies for the project"
+    cmds:
+      - brew install kerren/brrelease-tap/brrelease
+
+  release:
+    desc: "Runs a release using semantic versioning"
+    cmds:
+      - brrelease release --merge-into-branch=main
