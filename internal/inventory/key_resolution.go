@@ -12,8 +12,9 @@ import (
 
 // KeyResolver resolves key references to actual SSH keys
 type KeyResolver struct {
-	Client *op.Client
-	Vaults []string // Optional vault scope
+	Client  *op.Client
+	Vaults  []string // Optional vault scope
+	Account string   // 1Password account user UUID for multi-account support
 }
 
 // NewKeyResolver creates a new KeyResolver
@@ -22,6 +23,13 @@ func NewKeyResolver(client *op.Client, vaults []string) *KeyResolver {
 		Client: client,
 		Vaults: vaults,
 	}
+}
+
+// WithAccount sets the account user UUID for the resolver
+// This is used to include account info in agent.toml for multi-account support
+func (r *KeyResolver) WithAccount(accountUserUUID string) *KeyResolver {
+	r.Account = accountUserUUID
+	return r
 }
 
 // ResolutionResult contains the results of key resolution
@@ -87,6 +95,7 @@ func (r *KeyResolver) resolveKey(ctx context.Context, ref model.KeyRef) (*model.
 	return &model.ResolvedKey{
 		ItemID:    sshKey.ID,
 		VaultID:   sshKey.Vault.ID,
+		Account:   r.Account,
 		Title:     sshKey.Title,
 		PublicKey: sshKey.PublicKey,
 		KeyType:   sshKey.KeyType,

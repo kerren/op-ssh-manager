@@ -151,6 +151,10 @@ type ResolvedKey struct {
 	// VaultID is the 1Password vault ID
 	VaultID string `json:"vault_id"`
 
+	// Account is the 1Password account user UUID that owns this key
+	// This is used in agent.toml to support multiple 1Password accounts
+	Account string `json:"account,omitempty"`
+
 	// Title is the key's title in 1Password
 	Title string `json:"title"`
 
