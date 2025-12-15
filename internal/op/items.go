@@ -321,3 +321,85 @@ func (c *Client) ArchiveItem(ctx context.Context, idOrTitle string, vault ...str
 	_, err := c.Exec(ctx, args...)
 	return err
 }
+
+// SSHKeyType represents the type of SSH key to generate
+type SSHKeyType string
+
+const (
+	SSHKeyTypeEd25519 SSHKeyType = "ed25519"
+	SSHKeyTypeRSA2048 SSHKeyType = "rsa2048"
+	SSHKeyTypeRSA3072 SSHKeyType = "rsa3072"
+	SSHKeyTypeRSA4096 SSHKeyType = "rsa4096"
+)
+
+// CreateSSHKeyOptions contains options for creating an SSH key
+type CreateSSHKeyOptions struct {
+	// Title is the name of the key in 1Password
+	Title string
+
+	// Vault is the vault to create the key in (optional)
+	Vault string
+
+	// KeyType is the type of SSH key to generate (default: ed25519)
+	KeyType SSHKeyType
+
+	// Tags are optional tags to add to the item
+	Tags []string
+}
+
+// CreateSSHKey creates a new SSH key in 1Password
+func (c *Client) CreateSSHKey(ctx context.Context, opts CreateSSHKeyOptions) (*SSHKeyItem, error) {
+	if opts.Title == "" {
+		return nil, apperrors.New(apperrors.ErrValidation, "SSH key title is required")
+	}
+
+	keyType := opts.KeyType
+	if keyType == "" {
+		keyType = SSHKeyTypeEd25519
+	}
+
+	args := []string{
+		"item", "create",
+		"--category", "SSH Key",
+		"--title", opts.Title,
+		fmt.Sprintf("--generate-password=%s", keyType),
+	}
+
+	if opts.Vault != "" {
+		args = append(args, "--vault", opts.Vault)
+	}
+
+	for _, tag := range opts.Tags {
+		args = append(args, "--tags", tag)
+	}
+
+	item, err := ExecJSON[Item](c, ctx, args...)
+	if err != nil {
+		return nil, apperrors.Wrap(apperrors.ErrOPExec, "failed to create SSH key", err)
+	}
+
+	// Get the full SSH key details
+	return c.GetSSHKey(ctx, item.ID, item.Vault.ID)
+}
+
+// CopyItemTags copies tags from one item to another
+func (c *Client) CopyItemTags(ctx context.Context, sourceID, targetID string, vault ...string) error {
+	// Get source item
+	source, err := c.GetItem(ctx, sourceID, vault...)
+	if err != nil {
+		return err
+	}
+
+	if len(source.Tags) == 0 {
+		return nil
+	}
+
+	// Add tags to target
+	args := []string{"item", "edit", targetID, "--tags", strings.Join(source.Tags, ",")}
+	if len(vault) > 0 && vault[0] != "" {
+		args = append(args, "--vault", vault[0])
+	}
+
+	_, err = c.Exec(ctx, args...)
+	return err
+}

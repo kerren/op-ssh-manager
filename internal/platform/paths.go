@@ -4,6 +4,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"strconv"
 )
 
 // Paths contains all platform-specific paths used by the application
@@ -117,7 +118,7 @@ func GetSSHAgentSocket() string {
 		// Linux uses XDG_RUNTIME_DIR or fallback
 		runtimeDir := os.Getenv("XDG_RUNTIME_DIR")
 		if runtimeDir == "" {
-			runtimeDir = filepath.Join("/run", "user", string(os.Getuid()))
+			runtimeDir = filepath.Join("/run", "user", strconv.Itoa(os.Getuid()))
 		}
 		return filepath.Join(runtimeDir, "1Password", "agent.sock")
 	case "windows":
